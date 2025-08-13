@@ -1,0 +1,36 @@
+# render.yaml
+services:
+  - type: web
+    name: machine-production-backend
+    env: docker
+    region: oregon
+    dockerfilePath: backend/Dockerfile
+    plan: starter
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: DB_CONNECTION
+        value: mysql
+      # NO agregar APP_KEY ni DB_PASSWORD aquí; configúralos en el panel de Render
+    preDeployCommand: |
+      php artisan migrate --force
+      php artisan db:seed --class=DatabaseSeeder --force || true
+    healthCheckPath: /health
+
+  - type: static
+    name: machine-production-frontend
+    region: oregon
+    repoRoot: frontend
+    plan: free
+    buildCommand: "pnpm install && pnpm build"
+    publishPath: dist
+
+databases:
+  - name: machine-mysql
+    databaseName: machine_production
+    user: render_user
+    plan: basic-1gb
+    diskSizeGB: 10
+    region: oregon

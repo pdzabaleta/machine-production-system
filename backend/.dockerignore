@@ -1,0 +1,8 @@
+vendor
+node_modules
+.dockerignore
+.git
+.gitignore
+.env
+storage/*.key
+storage/*.log
