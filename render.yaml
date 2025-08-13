@@ -2,7 +2,6 @@ services:
   - type: web
     runtime: docker
     name: machine-production-backend
-    region: oregon
     dockerfilePath: backend/Dockerfile
     plan: starter
     envVars:
