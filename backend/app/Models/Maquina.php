@@ -12,4 +12,11 @@ class Maquina extends Model
 
     // $fillable ayuda que se pueda asignar masivamente los CRUD, protected es por seguridad
     protected $fillable = ['nombre', 'coeficiente'];
+
+    
+    public function tareas() //Se define la relación: una Máquina tiene muchas Tareas.
+    {
+        return $this->hasMany(Tarea::class, 'maquina_id');
+    }
+
 }
