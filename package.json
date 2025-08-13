@@ -1,0 +1,22 @@
+{
+  "name": "machine-production-system",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": { 
+  "install:backend": "cd backend && composer install",
+  "install:frontend": "cd frontend && pnpm install",
+  "install:all": "pnpm run install:backend && pnpm run install:frontend",
+  "setup:backend": "cd backend && cp .env.example .env && php artisan key:generate && php artisan migrate --seed",
+  "dev:backend": "cd backend && php artisan serve",
+  "dev:frontend": "cd frontend && pnpm run dev",
+  "dev": "concurrently \"pnpm run dev:backend\" \"pnpm run dev:frontend\""
+},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@9.15.3+sha512.1f79bc245a66eb0b07c5d4d83131240774642caaa86ef7d0434ab47c0d16f66b04e21e0c086eb61e62c77efc4d7f7ec071afad3796af64892fae66509173893a",
+  "devDependencies": {
+    "concurrently": "^9.2.0"
+  }
+}

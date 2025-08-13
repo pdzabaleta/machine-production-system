@@ -1,0 +1,7 @@
+/node_modules
+
+# Archivos del sistema operativo de Mac 
+.DS_Store
+Thumbs.db
+
+.vscode/

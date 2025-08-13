@@ -9,6 +9,9 @@ class Produccion extends Model
 {
     use HasFactory;
 
+    // --- Aqui se arregla la plurizacion por defecto de laravel ---
+    protected $table = 'produccion';
+
     /**
      * Define la relación "uno a muchos": una Produccion tiene muchas Tareas.
      */
