@@ -1,8 +1,8 @@
 # render.yaml
 services:
   - type: web
+    runtime: docker
     name: machine-production-backend
-    env: docker
     region: oregon
     dockerfilePath: backend/Dockerfile
     plan: starter
@@ -19,7 +19,8 @@ services:
       php artisan db:seed --class=DatabaseSeeder --force || true
     healthCheckPath: /health
 
-  - type: static
+  - type: web
+    runtime: static
     name: machine-production-frontend
     region: oregon
     repoRoot: frontend
