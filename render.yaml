@@ -1,4 +1,3 @@
-# render.yaml
 services:
   - type: web
     runtime: docker
@@ -13,7 +12,6 @@ services:
         value: "false"
       - key: DB_CONNECTION
         value: mysql
-      # NO agregar APP_KEY ni DB_PASSWORD aquí; configúralos en el panel de Render
     preDeployCommand: |
       php artisan migrate --force
       php artisan db:seed --class=DatabaseSeeder --force || true
