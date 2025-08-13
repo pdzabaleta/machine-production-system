@@ -44,6 +44,7 @@ class CalculateProductionCommand extends Command
             $tiempoRestante = $tiempoProduccionTotal;
             $fechaInicioFinal = null;
             $fechaTerminoFinal = null;
+            $calculoLog = [];
 
             while ($tiempoRestante > 0) {
                 if ($diaActual->isSaturday() || $diaActual->isSunday()) {
@@ -51,8 +52,9 @@ class CalculateProductionCommand extends Command
                     continue;
                 }
                 
+                // --- Log en la terminal ---
                 $this->line("--- Calculando día: " . $diaActual->toDateString() . " (" . $diaActual->dayName . ") ---");
-
+                
                 $inicioJornada = null;
                 $finJornada = $diaActual->copy()->setTime(16, 0);
 
@@ -68,38 +70,46 @@ class CalculateProductionCommand extends Command
                 $horasDelDia = abs($finJornada->diffInSeconds($inicioJornada)) / 3600;
                 $horasEfectivas = $horasDelDia;
                 $penalizacionDelDia = 0;
+                $detalleCalculo = "Día completo: {$inicioJornada->format('H:i')} - {$finJornada->format('H:i')} -> " . number_format($horasDelDia, 2) . " hrs";
 
-                // --- APLICACIÓN DE PENALIZACIONES ---
                 if ($diaActual->isWednesday()) {
                     $penalizacionDelDia = 2.5;
                     $horasEfectivas -= $penalizacionDelDia;
-                    $this->line("    - Penalización Miércoles: -2.5 hrs");
+                    $detalleCalculo .= " | Penalización Miércoles: -" . number_format($penalizacionDelDia, 2) . " hrs";
                 } 
-                // --- LÓGICA NUEVA: Penalización por día parcial ---
                 elseif ($horasDelDia < 5) {
                     $penalizacionDelDia = 1.5;
                     $horasEfectivas -= $penalizacionDelDia;
-                    $this->line("    - Penalización día parcial (< 5 hrs): -1.5 hrs");
+                    $detalleCalculo .= " | Penalización día parcial: -" . number_format($penalizacionDelDia, 2) . " hrs";
                 }
                 
                 $horasEfectivas = max(0, $horasEfectivas);
 
                 if ($tiempoRestante <= $penalizacionDelDia) {
-                    $this->line("    - Tiempo restante ({$tiempoRestante}) es menor o igual a la penalización ({$penalizacionDelDia}). Finalizando ciclo.");
+                    $detalleCalculo = "Ciclo finalizado: Tiempo restante ({$tiempoRestante}) es menor o igual a la penalización ({$penalizacionDelDia}).";
                     $fechaTerminoFinal = $fechaTerminoFinal ?? $fechaInicioFinal;
+                    
+                    $calculoLog[] = ['dia' => $diaActual->toDateString(), 'detalle' => $detalleCalculo, 'horas_inactividad' => 0, 'acumulado' => $horasInactividadAcumuladas, 'penalizacion' => 0, 'restante' => $tiempoRestante];
+                    $this->line("    - {$detalleCalculo}"); // --- Log en la terminal ---
                     break;
                 }
                 
+                $horasConsumidasHoy = 0;
                 if ($tiempoRestante >= $horasEfectivas) {
                     $horasInactividadAcumuladas += $horasEfectivas;
                     $tiempoRestante -= $horasEfectivas;
                     $fechaTerminoFinal = $finJornada->copy();
+                    $horasConsumidasHoy = $horasEfectivas;
                 } else {
                     $horasInactividadAcumuladas += $tiempoRestante;
+                    $horasConsumidasHoy = $tiempoRestante;
                     $fechaTerminoFinal = $inicioJornada->copy()->addSeconds($tiempoRestante * 3600);
                     $tiempoRestante = 0;
                 }
 
+                $calculoLog[] = ['dia' => $diaActual->toDateString(), 'detalle' => $detalleCalculo, 'horas_inactividad' => round($horasConsumidasHoy, 2), 'acumulado' => round($horasInactividadAcumuladas, 2), 'penalizacion' => $penalizacionDelDia, 'restante' => round($tiempoRestante, 2)];
+                
+                // --- Log en la terminal ---
                 $this->line("    - Horas disponibles: " . number_format($horasDelDia, 2) . " | Horas efectivas: " . number_format($horasEfectivas, 2));
                 $this->line("    - Acumulado: " . number_format($horasInactividadAcumuladas, 2) . " | Restante: " . number_format($tiempoRestante, 2));
 
@@ -109,6 +119,7 @@ class CalculateProductionCommand extends Command
             $produccion = new Produccion();
             $produccion->tiempo_produccion = $tiempoProduccionTotal;
             $produccion->tiempo_inactividad = $horasInactividadAcumuladas;
+            $produccion->calculo_log = json_encode($calculoLog);
             $produccion->fecha_hora_inicio_inactividad = $fechaInicioFinal;
             $produccion->fecha_hora_termino_inactividad = $fechaTerminoFinal;
             $produccion->save();
@@ -117,10 +128,8 @@ class CalculateProductionCommand extends Command
                 $tarea->id_produccion = $produccion->id;
                 $tarea->save();
             }
-
             $this->info("  - Ciclo de producción ID: {$produccion->id} creado.");
         }
-
         $this->info('Cálculo de producción finalizado.');
     }
 }

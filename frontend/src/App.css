@@ -1,42 +1,312 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+/* --- Variables de Color para el Tema Oscuro --- */
+:root {
+  --bg-color: #121212;
+  --sidebar-bg: #1e1e1e;
+  --card-bg: #2a2a2e;
+  --primary-text: #e0e0e0;
+  --secondary-text: #a0a0a0;
+  --border-color: #444;
+  --accent-color: #3f668a;
+  --accent-hover: #5a89b8;
+  --danger-color: #9e3d3d;
+  --danger-hover: #b74747;
+  --success-color: #2e7d32;
+  --notification-error-bg: #521313;
+  --notification-error-text: #ff8a8a;
+  --notification-success-bg: #135224;
+  --notification-success-text: #8aff94;
+}
+
+/* --- Estilos Generales --- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--primary-text);
+  font-size: 16px;
+}
+.app-container {
+  display: flex;
+  height: 100vh;
+}
+.content {
+  flex-grow: 1;
+  padding: 2rem 3rem;
+  overflow-y: auto;
+  min-width: 0;
+  position: relative;
+}
+
+/* --- Barra Lateral (Sidebar) --- */
+.sidebar {
+  width: 260px;
+  background-color: var(--sidebar-bg);
+  border-right: 1px solid var(--border-color);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+.sidebar-header h2 {
+  margin: 0.5rem 0 2rem 0.5rem;
+  border: none;
+}
+.sidebar-nav button {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  border: none;
+  background-color: transparent;
+  color: var(--primary-text);
   text-align: left;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s;
+}
+.sidebar-nav button:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+.sidebar-nav button.active {
+  background-color: var(--accent-color);
+  color: white;
+  font-weight: bold;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+/* --- Estructura de Tarjetas para el Contenido --- */
+.card {
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.card h3 {
+  margin-top: 0;
+  border: none;
 }
 
-@keyframes logo-spin {
+/* --- Formularios --- */
+form {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+input[type="text"],
+input[type="number"] {
+  background-color: #3c3c3c;
+  border: 1px solid var(--border-color);
+  color: var(--primary-text);
+  padding: 0.75rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  flex-grow: 1;
+}
+
+/* --- Botones --- */
+button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: var(--accent-color);
+  color: white;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+button:hover {
+  background-color: var(--accent-hover);
+}
+button.delete-btn {
+  background-color: var(--danger-color);
+}
+button.delete-btn:hover {
+  background-color: var(--danger-hover);
+}
+
+/* --- Estilos para la Tabla con CSS Grid --- */
+.grid-table {
+  display: flex;
+  flex-direction: column;
+  margin-top: 1.5rem;
+}
+.grid-header,
+.grid-row {
+  display: grid;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+.grid-header {
+  color: var(--secondary-text);
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+.grid-row:nth-child(even) {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+.grid-table .grid-header {
+  grid-template-columns: 50px 1fr 150px 220px;
+}
+.grid-table .grid-row {
+  grid-template-columns: 50px 1fr 150px 220px;
+}
+.actions-cell {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* --- Notificaciones Flotantes --- */
+.notification {
+  position: fixed;
+  top: 2rem;
+  right: 3rem;
+  z-index: 2000;
+  min-width: 300px;
+  padding: 1rem;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  animation: slideIn 0.5s ease-out forwards;
+  font-weight: bold;
+}
+.notification.error {
+  background-color: var(--notification-error-bg);
+  color: var(--notification-error-text);
+  border: 1px solid var(--notification-error-text);
+}
+.notification.success {
+  background-color: var(--notification-success-bg);
+  color: var(--notification-success-text);
+  border: 1px solid var(--notification-success-text);
+}
+.close-btn {
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0 0.5rem;
+}
+@keyframes slideIn {
   from {
-    transform: rotate(0deg);
+    opacity: 0;
+    transform: translateY(-20px);
   }
   to {
-    transform: rotate(360deg);
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+/* --- Tabla de Historial con Scroll y Grid --- */
+.table-container {
+  max-height: 500px;
+  overflow-y: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  margin-top: 1rem;
+}
+.details-table .grid-header {
+  position: sticky;
+  top: 0;
+  background-color: var(--card-bg);
+  z-index: 1;
+}
+.details-table .grid-row,
+.details-table .grid-header {
+  grid-template-columns: 150px 2fr 1fr 1fr 1fr 1fr;
+}
+.csv-download-link {
+  display: inline-block;
+  margin-bottom: 1rem;
+  padding: 0.6rem 1.2rem;
+  background-color: var(--success-color);
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+/* --- REGLAS RESPONSIVAS --- */
+@media (max-width: 1024px) {
+  .content {
+    padding: 1.5rem;
+  }
+  .grid-table .grid-header,
+  .grid-table .grid-row {
+    grid-template-columns: 50px 1fr 120px 180px;
+  }
+  .details-table .grid-row,
+  .details-table .grid-header {
+    grid-template-columns: 120px 1.5fr 1fr 1fr 1fr 1fr;
   }
 }
 
-.card {
-  padding: 2em;
-}
+@media (max-width: 768px) {
+  .app-container {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .sidebar-nav {
+    display: flex;
+  }
+  .sidebar-nav button {
+    flex-grow: 1;
+    text-align: center;
+  }
 
-.read-the-docs {
-  color: #888;
+  /* Convertimos las filas de la tabla en tarjetas en móviles */
+  .grid-header {
+    display: none;
+  } /* Ocultamos el encabezado original */
+
+  .grid-row {
+    display: block; /* Hacemos que cada fila sea un bloque */
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .grid-row > div {
+    display: flex;
+    justify-content: space-between; /* Ponemos la etiqueta a la izquierda y el valor a la derecha */
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .grid-row > div:last-child {
+    border-bottom: none;
+  }
+
+  /* La magia: creamos una pseudo-etiqueta con el contenido de 'data-label' */
+  .grid-row > div::before {
+    content: attr(data-label); /* Toma el texto del atributo data-label */
+    font-weight: bold;
+    color: var(--secondary-text);
+    margin-right: 1rem;
+  }
+
+  .actions-cell {
+    justify-content: flex-start;
+  }
+  .details-table .grid-row {
+    border-bottom: none;
+  }
 }

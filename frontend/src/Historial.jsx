@@ -1,52 +1,49 @@
-import { useState, useEffect } from 'react';
-// Importamos el componente para descargar CSV
-import { CSVLink } from 'react-csv';
+import { useState, useEffect } from "react";
+import { CSVLink } from "react-csv";
 
 function Historial() {
   const [historial, setHistorial] = useState([]);
   const [loading, setLoading] = useState(true);
-  // Nuevo estado para saber qué fila de detalles está abierta.
-  const [expandedRowId, setExpandedRowId] = useState(null);
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/api/historial')
-      .then(response => response.json())
-      .then(data => {
-        setHistorial(data);
+    fetch("http://127.0.0.1:8000/api/historial")
+      .then((response) => response.json())
+      .then((data) => {
+        const parsedData = data.map((item) => ({
+          ...item,
+          calculo_log: JSON.parse(item.calculo_log || "[]"),
+        }));
+        setHistorial(parsedData);
         setLoading(false);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("Error al obtener el historial:", error);
         setLoading(false);
       });
   }, []);
-
-  // Función para abrir o cerrar los detalles de una fila.
-  const toggleDetails = (id) => {
-    if (expandedRowId === id) {
-      setExpandedRowId(null); // Si ya está abierto, lo cierra.
-    } else {
-      setExpandedRowId(id); // Si está cerrado, lo abre.
-    }
-  };
-
-  // Preparamos los datos para el archivo CSV.
   const getCsvData = () => {
     const data = [];
-    historial.forEach(produccion => {
-      produccion.tareas.forEach(tarea => {
+    historial.forEach((produccion) => {
+      produccion.calculo_log.forEach((logEntry) => {
         data.push({
           "Ciclo ID": produccion.id,
-          "Tiempo Produccion Total (hrs)": produccion.tiempo_produccion,
-          "Tiempo Inactividad (hrs)": produccion.tiempo_inactividad,
-          "Inicio Inactividad": new Date(produccion.fecha_hora_inicio_inactividad).toLocaleString(),
-          "Fin Inactividad": new Date(produccion.fecha_hora_termino_inactividad).toLocaleString(),
-          "Tarea ID": tarea.id,
-          "Tiempo Empleado Tarea (hrs)": tarea.tiempo_empleado,
+          Día: logEntry.dia,
+          "Detalle Cálculo": logEntry.detalle,
+          "Horas Inactividad": logEntry.horas_inactividad,
+          "Horas Acumuladas": logEntry.acumulado,
+          Penalización: logEntry.penalizacion,
+          Restante: logEntry.restante,
         });
       });
     });
     return data;
+  };
+  const formatDay = (dateString) => {
+    const date = new Date(`${dateString}T00:00:00`);
+    const dayName = date.toLocaleDateString("es-ES", { weekday: "long" });
+    const capitalizedDayName =
+      dayName.charAt(0).toUpperCase() + dayName.slice(1);
+    return `${dateString} (${capitalizedDayName})`;
   };
 
   if (loading) {
@@ -56,11 +53,11 @@ function Historial() {
   return (
     <div>
       <h2>Historial de Producción</h2>
-      
+
       {historial.length > 0 && (
-        <CSVLink 
-          data={getCsvData()} 
-          filename={"historial_produccion.csv"}
+        <CSVLink
+          data={getCsvData()}
+          filename={"historial_produccion_detallado.csv"}
           className="csv-download-link"
         >
           Descargar en Excel (CSV)
@@ -68,59 +65,51 @@ function Historial() {
       )}
 
       {historial.length === 0 ? (
-        <p>No hay ciclos de producción completados todavía.</p>
+        <p>
+          No hay ciclos de producción completados. Ejecuta el comando en el
+          backend.
+        </p>
       ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>Ciclo ID</th>
-              <th>Tiempo Producción</th>
-              <th>Tiempo Inactividad</th>
-              <th>Inicio Inactividad</th>
-              <th>Fin Inactividad</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {historial.map(produccion => (
-              // Usamos Fragment para agrupar la fila principal y la de detalles
-              <>
-                <tr key={produccion.id}>
-                  <td>{produccion.id}</td>
-                  <td>{produccion.tiempo_produccion} hrs</td>
-                  <td>{produccion.tiempo_inactividad} hrs</td>
-                  <td>{new Date(produccion.fecha_hora_inicio_inactividad).toLocaleString()}</td>
-                  <td>{new Date(produccion.fecha_hora_termino_inactividad).toLocaleString()}</td>
-                  <td>
-                    <button onClick={() => toggleDetails(produccion.id)}>
-                      {expandedRowId === produccion.id ? 'Ocultar Detalles' : 'Ver Detalles'}
-                    </button>
-                  </td>
-                </tr>
-                {/* Fila de detalles que solo se muestra si el ID coincide */}
-                {expandedRowId === produccion.id && (
-                  <tr className="details-row">
-                    <td colSpan="6">
-                      <div className="details-content">
-                        <h4>Detalle de Tareas del Ciclo {produccion.id}</h4>
-                        <ul>
-                          {produccion.tareas.map(tarea => (
-                            <li key={tarea.id}>
-                              <strong>Tarea ID: {tarea.id}</strong> | 
-                              Tiempo Empleado: {tarea.tiempo_empleado} hrs | 
-                              Inicio: {new Date(tarea.fecha_hora_inicio).toLocaleDateString()} | 
-                              Fin: {new Date(tarea.fecha_hora_termino).toLocaleDateString()}
-                            </li>
-                          ))}
-                        </ul>
+        historial.map((produccion) => (
+          <div key={produccion.id} className="card">
+            <h3>Ciclo de Producción ID: {produccion.id}</h3>
+            <p>
+              <strong>Tiempo de Producción Total:</strong>{" "}
+              {produccion.tiempo_produccion} hrs |{" "}
+              <strong>Tiempo de Inactividad Calculado:</strong>{" "}
+              {produccion.tiempo_inactividad} hrs
+            </p>
+
+            <div className="table-container">
+              <div className="grid-table details-table">
+                <div className="grid-header">
+                  <div>DÍA</div>
+                  <div>DETALLE CÁLCULO</div>
+                  <div>HRS INACTIVIDAD</div>
+                  <div>ACUMULADA</div>
+                  <div>PENALIZACIÓN</div>
+                  <div>RESTANTE</div>
+                </div>
+                <div className="grid-body">
+                  {produccion.calculo_log.map((log, index) => (
+                    <div className="grid-row" key={index}>
+                      <div data-label="DÍA">{formatDay(log.dia)}</div>
+                      <div data-label="DETALLE CÁLCULO">{log.detalle}</div>
+                      <div data-label="HRS INACTIVIDAD">
+                        {log.horas_inactividad} hrs
                       </div>
-                    </td>
-                  </tr>
-                )}
-              </>
-            ))}
-          </tbody>
-        </table>
+                      <div data-label="ACUMULADA">{log.acumulado} hrs</div>
+                      <div data-label="PENALIZACIÓN">
+                        {log.penalizacion} hrs
+                      </div>
+                      <div data-label="RESTANTE">{log.restante} hrs</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        ))
       )}
     </div>
   );
