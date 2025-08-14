@@ -6,7 +6,7 @@
   "scripts": {
     "install:backend": "cd backend && composer install",
     "install:frontend": "cd frontend && pnpm install",
-    "install:all": "pnpm run install:backend && pnpm run install:frontend",
+    "install:all": "pnpm install && pnpm run install:backend && pnpm run install:frontend",
     "setup": "cd backend && ([ ! -f .env ] && cp .env.example .env) && php artisan key:generate",
     "db:reset": "cd backend && php artisan migrate:fresh --seed",
     "dev:backend": "cd backend && php artisan serve",
