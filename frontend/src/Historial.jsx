@@ -5,10 +5,14 @@ function Historial() {
   const [historial, setHistorial] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // useEffect es como decir: "cuando esta página cargue por primera vez, haz esto".
+  // Aquí lo usamos para ir a buscar los datos del historial a nuestra API de Laravel.
   useEffect(() => {
     fetch("http://127.0.0.1:8000/api/historial")
       .then((response) => response.json())
       .then((data) => {
+        // El 'calculo_log' viene de la base de datos como texto.
+        // Aquí lo convertimos de vuelta a un objeto para poder usarlo.
         const parsedData = data.map((item) => ({
           ...item,
           calculo_log: JSON.parse(item.calculo_log || "[]"),
@@ -20,7 +24,10 @@ function Historial() {
         console.error("Error al obtener el historial:", error);
         setLoading(false);
       });
-  }, []);
+  }, []); // El array vacío asegura que esto se ejecute solo una vez.
+
+  // Esta función prepara los datos para que el botón de "Descargar CSV" funcione.
+  // Básicamente, convierte nuestro historial en un formato que Excel entiende.
   const getCsvData = () => {
     const data = [];
     historial.forEach((produccion) => {
@@ -38,6 +45,8 @@ function Historial() {
     });
     return data;
   };
+
+  // Una pequeña función para que la fecha se vea más bonita, añadiendo el día de la semana.
   const formatDay = (dateString) => {
     const date = new Date(`${dateString}T00:00:00`);
     const dayName = date.toLocaleDateString("es-ES", { weekday: "long" });
@@ -46,6 +55,7 @@ function Historial() {
     return `${dateString} (${capitalizedDayName})`;
   };
 
+  // Mientras los datos cargan, mostramos un mensaje simple.
   if (loading) {
     return <div>Cargando historial...</div>;
   }
@@ -54,6 +64,7 @@ function Historial() {
     <div>
       <h2>Historial de Producción</h2>
 
+      {/* El botón de descarga. Solo aparece si hay algo en el historial. */}
       {historial.length > 0 && (
         <CSVLink
           data={getCsvData()}
@@ -64,12 +75,14 @@ function Historial() {
         </CSVLink>
       )}
 
+      {/* Si no hay historial, mostramos un mensaje. Si hay, mostramos las tarjetas. */}
       {historial.length === 0 ? (
         <p>
           No hay ciclos de producción completados. Ejecuta el comando en el
           backend.
         </p>
       ) : (
+        // Creamos una "tarjeta" por cada ciclo de producción que encontramos.
         historial.map((produccion) => (
           <div key={produccion.id} className="card">
             <h3>Ciclo de Producción ID: {produccion.id}</h3>
@@ -91,6 +104,7 @@ function Historial() {
                   <div>RESTANTE</div>
                 </div>
                 <div className="grid-body">
+                  {/* Y aquí, dentro de cada tarjeta, creamos una fila por cada día del cálculo. */}
                   {produccion.calculo_log.map((log, index) => (
                     <div className="grid-row" key={index}>
                       <div data-label="DÍA">{formatDay(log.dia)}</div>

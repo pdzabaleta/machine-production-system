@@ -126,7 +126,7 @@ Una vez que la aplicación está corriendo, este es el flujo de trabajo recomend
 -   Ve a la pestaña **"Historial de Producción"** para ver los resultados del cálculo en una tabla detallada.
     
 
-_Para_ reiniciar la base de datos y generar un nuevo ciclo de _prueba, simplemente ejecuta `pnpm run db:reset`._
+_Para_ reiniciar la base de datos y generar un nuevo ciclo de _prueba, simplemente ejecuta `pnpm run db:reset` el cual debe ser ejecutado en el archivo raiz._
 
 ## Uso de Asistentes de IA
 
