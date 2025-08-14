@@ -39,7 +39,7 @@ RUN setcap "cap_net_bind_service=+ep" /usr/bin/php${PHP_VERSION}
 # --- ESTA ES LA CORRECCIÓN DEFINITIVA ---
 # En lugar de usar variables, ponemos los números directamente.
 RUN groupadd --force -g 1000 sail
-RUN useradd -ms /bin/bash --no-user-group -g 1000 -u 1000 sail
+RUN useradd -ms /bin/bash --no-user-group -g 1000 -u 1337 sail
 
 COPY . .
 RUN chown -R sail:sail /var/www/html
