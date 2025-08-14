@@ -1,3 +1,6 @@
+ARG WWWUSER=1000
+ARG WWWGROUP=1000
+
 FROM ubuntu:24.04
 
 LABEL maintainer="Taylor Otwell"
