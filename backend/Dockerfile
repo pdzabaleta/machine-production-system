@@ -1,5 +1,3 @@
-ARG WWWUSER=1000
-ARG WWWGROUP=1000
 FROM ubuntu:24.04
 
 LABEL maintainer="Taylor Otwell"
@@ -38,14 +36,14 @@ RUN apt-get update \
 
 RUN setcap "cap_net_bind_service=+ep" /usr/bin/php${PHP_VERSION}
 
-RUN groupadd --force -g $WWWGROUP sail
-RUN useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u $WWWUSER sail
+# --- ESTA ES LA CORRECCIÓN DEFINITIVA ---
+# En lugar de usar variables, ponemos los números directamente.
+RUN groupadd --force -g 1000 sail
+RUN useradd -ms /bin/bash --no-user-group -g 1000 -u 1000 sail
 
 COPY . .
 RUN chown -R sail:sail /var/www/html
 
 USER sail
 
-# --- ESTA ES LA LÍNEA FINAL Y CORREGIDA ---
-# En lugar de usar un script complejo, le damos la orden directa para iniciar el servidor.
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=10000"]
