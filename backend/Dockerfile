@@ -39,5 +39,5 @@ COPY . .
 RUN composer install --no-dev --optimize-autoloader
 
 # --- ESTA ES LA CORRECCIÓN DEFINITIVA ---
-# Le decimos a Laravel que use la variable de entorno PORT que Render le proporciona.
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=${PORT}"]
+# Usamos el formato "shell" sin corchetes para que la variable ${PORT} se interprete correctamente.
+CMD php artisan serve --host=0.0.0.0 --port=${PORT}
