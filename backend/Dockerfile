@@ -37,5 +37,9 @@ RUN apt-get update \
 # Copiamos el código de nuestra aplicación a la caja
 COPY . .
 
+# --- ESTA ES LA CORRECCIÓN DEFINITIVA ---
+# Le decimos a Docker que instale las dependencias de Laravel para producción.
+RUN composer install --no-dev --optimize-autoloader
+
 # La orden final para encender el servidor. Se ejecutará como el usuario 'root'.
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=10000"]
