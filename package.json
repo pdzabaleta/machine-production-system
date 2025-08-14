@@ -3,15 +3,16 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": { 
-  "install:backend": "cd backend && composer install",
-  "install:frontend": "cd frontend && pnpm install",
-  "install:all": "pnpm run install:backend && pnpm run install:frontend",
-  "setup:backend": "cd backend && cp .env.example .env && php artisan key:generate && php artisan migrate --seed",
-  "dev:backend": "cd backend && php artisan serve",
-  "dev:frontend": "cd frontend && pnpm run dev",
-  "dev": "concurrently \"pnpm run dev:backend\" \"pnpm run dev:frontend\""
-},
+  "scripts": {
+    "install:backend": "cd backend && composer install",
+    "install:frontend": "cd frontend && pnpm install",
+    "install:all": "pnpm run install:backend && pnpm run install:frontend",
+    "setup": "cd backend && ([ ! -f .env ] && cp .env.example .env) && php artisan key:generate",
+    "db:reset": "cd backend && php artisan migrate:fresh --seed",
+    "dev:backend": "cd backend && php artisan serve",
+    "dev:frontend": "cd frontend && pnpm run dev",
+    "dev": "concurrently \"pnpm run dev:backend\" \"pnpm run dev:frontend\""
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

@@ -271,13 +271,13 @@ button.delete-btn:hover {
     text-align: center;
   }
 
-  /* Convertimos las filas de la tabla en tarjetas en móviles */
+  /* Convierte las filas de la tabla en tarjetas en móviles */
   .grid-header {
     display: none;
-  } /* Ocultamos el encabezado original */
+  } /* Oculta el encabezado original */
 
   .grid-row {
-    display: block; /* Hacemos que cada fila sea un bloque */
+    display: block; /* Hace que cada fila sea un bloque */
     border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 1rem;
@@ -295,7 +295,7 @@ button.delete-btn:hover {
     border-bottom: none;
   }
 
-  /* La magia: creamos una pseudo-etiqueta con el contenido de 'data-label' */
+  /* crea una pseudo-etiqueta con el contenido de 'data-label' */
   .grid-row > div::before {
     content: attr(data-label); /* Toma el texto del atributo data-label */
     font-weight: bold;

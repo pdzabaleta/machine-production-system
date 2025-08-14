@@ -12,12 +12,12 @@ return new class extends Migration
     public function up()
     {
         Schema::create('produccion', function (Blueprint $table) {
-            $table->id(); // identificador único [cite: 6]
-            $table->decimal('tiempo_produccion', 5, 2); // suma total del tiempo_produccion de 5 tareas [cite: 6]
-            $table->decimal('tiempo_inactividad', 5, 2); // tiempo de inactividad [cite: 6]
+            $table->id(); // identificador único 
+            $table->decimal('tiempo_produccion', 5, 2); // suma total del tiempo_produccion de 5 tareas 
+            $table->decimal('tiempo_inactividad', 5, 2); // tiempo de inactividad 
             $table->json('calculo_log')->nullable();  // Esta columna guardará el detalle del cálculo, día por día.
-            $table->dateTime('fecha_hora_inicio_inactividad'); // fecha y hora de inicio del periodo de inactividad [cite: 6]
-            $table->dateTime('fecha_hora_termino_inactividad'); // fecha y hora de término del periodo de inactividad [cite: 6]
+            $table->dateTime('fecha_hora_inicio_inactividad'); // fecha y hora de inicio del periodo de inactividad 
+            $table->dateTime('fecha_hora_termino_inactividad'); // fecha y hora de término del periodo de inactividad 
             $table->timestamps();
         });
     }

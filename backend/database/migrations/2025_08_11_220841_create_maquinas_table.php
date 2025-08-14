@@ -12,9 +12,9 @@ return new class extends Migration
     public function up()
     {
         Schema::create('maquinas', function (Blueprint $table) {
-            $table->id(); // autoincremental, identificador único [cite: 6]
-            $table->string('nombre'); // nombre de la máquina [cite: 6]
-            $table->decimal('coeficiente', 4, 2); // coeficiente de productividad [cite: 6]
+            $table->id(); // autoincremental, identificador único 
+            $table->string('nombre'); // nombre de la máquina 
+            $table->decimal('coeficiente', 4, 2); // coeficiente de productividad 
             $table->timestamps(); // agrega created_at y updated_at
         });
     }

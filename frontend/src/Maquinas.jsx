@@ -3,21 +3,27 @@ import Modal from "./Modal";
 import Notification from "./Notification";
 
 function Maquinas() {
+  // --- Estados Principales ---
+  // Aquí guardamos los datos que vienen de la API.
   const [maquinas, setMaquinas] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [formData, setFormData] = useState({ nombre: "", coeficiente: "" });
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [maquinaParaBorrar, setMaquinaParaBorrar] = useState(null);
-  const [editingId, setEditingId] = useState(null);
+  const [loading, setLoading] = useState(true); // Para mostrar un mensaje de "Cargando..."
+  const [notification, setNotification] = useState({ message: "", type: "" }); // Para las notificaciones de éxito/error
+
+  // --- Estados para los Formularios y Modales ---
+  const [formData, setFormData] = useState({ nombre: "", coeficiente: "" }); // Para el form de crear
   const [editFormData, setEditFormData] = useState({
     nombre: "",
     coeficiente: "",
-  });
-  const [notification, setNotification] = useState({ message: "", type: "" });
+  }); // Para el form de editar
+  const [editingId, setEditingId] = useState(null); // Para saber qué fila estamos editando
+  const [isModalOpen, setIsModalOpen] = useState(false); // Para mostrar/ocultar el modal de borrado
+  const [maquinaParaBorrar, setMaquinaParaBorrar] = useState(null);
 
+  // Una función simple para mostrar notificaciones.
   const showNotification = (message, type) =>
     setNotification({ message, type });
 
+  // Esta función va a buscar la lista de máquinas a nuestra API de Laravel.
   const fetchMaquinas = () => {
     setLoading(true);
     fetch("http://127.0.0.1:8000/api/maquinas")
@@ -35,13 +41,19 @@ function Maquinas() {
         );
       });
   };
+
+  // useEffect se asegura de que la lista de máquinas se cargue solo una vez, al abrir la página.
   useEffect(() => {
     fetchMaquinas();
   }, []);
+
+  // Guarda lo que el usuario escribe en los inputs del formulario.
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
   };
+
+  // Se activa al enviar el formulario para crear una máquina nueva.
   const handleSubmit = (event) => {
     event.preventDefault();
     showNotification("", "");
@@ -75,6 +87,8 @@ function Maquinas() {
         );
       });
   };
+
+  // Lógica para el borrado, separada en dos pasos para la confirmación.
   const abrirModalDeConfirmacion = (id) => {
     setMaquinaParaBorrar(id);
     setIsModalOpen(true);
@@ -101,6 +115,8 @@ function Maquinas() {
         setMaquinaParaBorrar(null);
       });
   };
+
+  // Lógica para la edición en línea.
   const handleEditClick = (maquina) => {
     setEditingId(maquina.id);
     setEditFormData({
@@ -202,6 +218,8 @@ function Maquinas() {
           <div className="grid-body">
             {maquinas.map((maquina) => (
               <div className="grid-row" key={maquina.id}>
+                {/* Aquí está la magia de la edición: si el ID de esta fila es el que estamos
+                    editando, mostramos los inputs. Si no, mostramos los datos normales. */}
                 {editingId === maquina.id ? (
                   <>
                     <div data-label="ID">{maquina.id}</div>
