@@ -34,10 +34,16 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+# Copiamos el código de nuestra aplicación a la caja
 COPY . .
 
+# Instalamos las dependencias de Laravel
 RUN composer install --no-dev --optimize-autoloader
 
 # --- ESTA ES LA CORRECCIÓN DEFINITIVA ---
-# Usamos el formato "shell" sin corchetes para que la variable ${PORT} se interprete correctamente.
+# Le decimos a Render que ejecute las migraciones y los seeders automáticamente.
+# El '--force' es importante para que funcione en un entorno de producción.
+RUN php artisan migrate:fresh --seed --force
+
+# La orden final para encender el servidor.
 CMD php artisan serve --host=0.0.0.0 --port=${PORT}
