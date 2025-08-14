@@ -11,7 +11,7 @@ WORKDIR /var/www/html
 RUN ln -snf /usr/share/zoneinfo/UTC /etc/localtime && echo UTC > /etc/timezone
 
 RUN apt-get update \
-    && apt-get install -y gnupg gosu curl ca-certificates zip unzip git supervisor sqlite3 libcap2-bin libpng-dev python3 \
+    && apt-get install -y gnupg gosu curl ca-certificates zip unzip git sqlite3 libcap2-bin libpng-dev python3 \
     && mkdir -p /etc/apt/keyrings \
     && curl -sS 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xb8dc7e53946656efbce4c1dd71daeaab4ad4cab6' | gpg --dearmor | tee /etc/apt/keyrings/ppa_ondrej_php.gpg > /dev/null \
     && echo "deb [signed-by=/etc/apt/keyrings/ppa_ondrej_php.gpg] https://ppa.launchpadcontent.net/ondrej/php/ubuntu noble main" > /etc/apt/sources.list.d/ppa_ondrej_php.list \
@@ -34,16 +34,8 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN setcap "cap_net_bind_service=+ep" /usr/bin/php${PHP_VERSION}
-
-# --- ESTA ES LA CORRECCIÓN DEFINITIVA ---
-# En lugar de usar variables, ponemos los números directamente.
-RUN groupadd --force -g 1000 sail
-RUN useradd -ms /bin/bash --no-user-group -g 1000 -u 1337 sail
-
+# Copiamos el código de nuestra aplicación a la caja
 COPY . .
-RUN chown -R sail:sail /var/www/html
 
-USER sail
-
+# La orden final para encender el servidor. Se ejecutará como el usuario 'root'.
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=10000"]
