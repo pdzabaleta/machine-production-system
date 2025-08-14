@@ -17,6 +17,7 @@ La aplicación está construida con una arquitectura moderna, separando el backe
 -   **Tablero de Avance (GitHub Projects):**  [Ver el tablero del proyecto](https://github.com/users/pdzabaleta/projects/3/views/1 "null")
     
 
+
 ## Requisitos del Sistema
 
 Para poder correr este proyecto en tu máquina, necesitarás tener instaladas las siguientes herramientas estándar de desarrollo:
@@ -32,9 +33,9 @@ Para poder correr este proyecto en tu máquina, necesitarás tener instaladas la
 
 ## Instalación (Paso a Paso)
 
-He preparado unos scripts para que la instalación sea súper sencilla y rápida. Solo tienes que seguir estos 4 pasos en tu terminal:
+He preparado unos scripts para que la instalación sea súper sencilla y rápida.
 
-**1. Clonar el Repositorio** Primero, clona el proyecto en tu computador.
+**1. Clonar el Repositorio**
 
 ```
 git clone https://github.com/pdzabaleta/machine-production-system.git
@@ -42,27 +43,30 @@ cd machine-production-system
 
 ```
 
-**2. Instalar Todas las Dependencias** Este comando instalará todo lo necesario para el backend (con Composer) y el frontend (con pnpm) de una sola vez.
+**2. Instalar Todas las Dependencias**
 
 ```
 pnpm run install:all
 
 ```
 
-**3. Configurar el Entorno del Backend (¡Paso Importante!)** Este paso conecta la aplicación con tu base de datos local. Es un proceso de dos partes:
+**3. Configuración Inicial del Entorno (¡Ejecutar solo una vez!)** Este es el paso más importante y se realiza en dos partes.
 
--   **Parte A: Configuración Manual de Credenciales**
+-   **Parte A: Ejecución del Script de Setup** Este comando creará el archivo de configuración `.env` en la carpeta `backend/` por ti y generará la clave de seguridad de la aplicación.
     
-    1.  Primero, **crea** una **base de datos vacía** en tu gestor de MySQL (como phpMyAdmin, MySQL Workbench, etc.). Puedes llamarla `maquinas_produccion` o como prefieras.
+    ```
+    pnpm run setup
+    
+    ```
+    
+-   **Parte B: Configuración Manual de Credenciales**
+    
+    1.  Primero, **crea una base de datos vacía** en tu gestor de MySQL.
         
-    2.  Luego, en la carpeta `backend/`, haz una copia del archivo `.env.example` y renómbrala a `.env`.
-        
-    3.  Abre ese nuevo archivo `.env` y edita las siguientes líneas con los datos de tu base de datos. Cada desarrollador tiene una configuración diferente, por eso este paso es manual.
+    2.  Luego, abre el archivo `backend/.env` que se acaba de crear y edita las siguientes líneas con los datos de tu base de datos local.
         
     
     ```
-    # ... (otras variables)
-    
     DB_CONNECTION=mysql
     DB_HOST=127.0.0.1
     DB_PORT=3306              # <-- ¡Importante! Revisa si este es tu puerto (MAMP suele usar 8889)
@@ -70,39 +74,59 @@ pnpm run install:all
     DB_USERNAME=root                 # <-- Tu usuario de MySQL
     DB_PASSWORD=                     # <-- Tu contraseña de MySQL (puede ir vacía)
     
-    # ... (otras variables)
-    
-    ```
-    
--   **Parte** B: Ejecución del Script de Setup Una vez que hayas guardado tu `.env` con tus credenciales, ejecuta el siguiente comando. Se encargará de generar la clave de seguridad, ejecutar las migraciones y llenar la base de datos con datos de prueba.
-    
-    ```
-    pnpm run setup:backend
-    
     ```
     
 
-**4. ¡Levantar la Aplicación!** Este último comando iniciará el servidor de Laravel y el de React al mismo tiempo.
+**4. Crear y Llenar la Base de Datos** Este comando ejecutará las migraciones y llenará las tablas con datos de prueba.
+
+```
+pnpm run db:reset
+
+```
+
+**5. ¡Levantar la Aplicación!**
 
 ```
 pnpm run dev
 
 ```
 
-Una vez que termine, podrás ver la aplicación funcionando en `http://localhost:5173` (o la URL que te indique la terminal).
+Ahora podrás ver la aplicación funcionando en `http://localhost:5173`.
 
-## ¿Cómo Ejecutar la Rutina de Cálculo?
+## Flujo de Trabajo y Pruebas
 
-La lógica principal del proyecto se encuentra en un comando de Artisan. Para ejecutarlo, abre una **nueva terminal**, navega a la carpeta del backend y ejecuta:
+Una vez que la aplicación está corriendo, este es el flujo de trabajo recomendado:
 
-```
-cd backend
-php artisan app:calculate-production
+**1. Probar el CRUD**
 
-```
+-   Navega a la pestaña **"Gestión de Máquinas"**.
+    
+-   Prueba a crear, editar y eliminar máquinas.
+    
 
-Verás en la terminal el cálculo detallado del ciclo de producción. Después de ejecutarlo, podrás ver los resultados en la pestaña "Historial de Producción" de la aplicación web.
+**2. Ejecutar la Rutina de Cálculo**
 
+-   Para probar la funcionalidad principal del proyecto, abre una **nueva terminal** (sin cerrar la que corre `pnpm run dev`).
+    
+-   Navega a la carpeta del backend y ejecuta el comando:
+    
+    ```
+    cd backend
+    php artisan app:calculate-production
+    
+    ```
+    
+-   Verás en la terminal el cálculo detallado del ciclo de producción.
+    
+
+**3. Verificar el Historial**
+
+-   Vuelve a la aplicación en tu navegador.
+    
+-   Ve a la pestaña **"Historial de Producción"** para ver los resultados del cálculo en una tabla detallada.
+    
+
+_Para_ reiniciar la base de datos y generar un nuevo ciclo de _prueba, simplemente ejecuta `pnpm run db:reset`._
 
 ## Uso de Asistentes de IA
 
@@ -121,16 +145,12 @@ A continuación, presento una selección de los prompts que utilicé, los cuales
     
 -   "Detecté una posible omisión en el PDF: la tabla `tareas` no tiene una `foreign key` para conectarse con `maquinas`. ¿Es un error y debería añadirla para que la lógica funcione?"
     
--   "El documento no especifica si todas las máquinas deben trabajar simultáneamente. ¿Cómo debo interpretar el alcance de la simulación?"
-    
 
 #### **Backend y Base de Datos (Laravel)**
 
 -   "¿Cómo soluciono un error de `foreign key constraint` al intentar vaciar tablas con un seeder en Laravel?"
     
 -   "Necesito que la API de Laravel devuelva los errores de validación en formato JSON en lugar de HTML cuando la pruebo con Postman."
-    
--   "Dame el comando de Artisan para crear una `Factory` y un `Controller` de tipo API."
     
 -   "Genera el código para una `Factory` de `Maquina` que asigne un nombre y un coeficiente aleatorio entre 1 y 3."
     
@@ -139,11 +159,9 @@ A continuación, presento una selección de los prompts que utilicé, los cuales
 
 -   "Dame el código CSS para crear un layout de dos columnas con una barra lateral fija y un área de contenido con scroll, usando un tema oscuro."
     
--   "Mi tabla, construida con `divs` y CSS Grid, no es responsiva. ¿Cómo puedo hacer que se transforme en una lista de tarjetas en pantallas pequeñas?"
+-   "Mi tabla hecha con `divs` y CSS Grid no es responsiva. ¿Cómo puedo hacer que se transforme en una lista de tarjetas en pantallas pequeñas?"
     
 -   "Al hacer clic en un botón dentro de una tabla en React, toda la página parpadea y el estado se reinicia. ¿Cuál podría ser la causa y cómo lo soluciono?"
     
--   "Necesito reemplazar el `window.confirm()` por defecto con un componente de modal personalizado en React para confirmar la eliminación de un ítem."
-        
 
 ¡Gracias por revisar mi proyecto!
