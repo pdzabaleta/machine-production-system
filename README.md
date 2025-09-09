@@ -1,7 +1,7 @@
 
 # Sistema de Gestión de Producción de Máquinas
 
-Howdy! 🤠 Este es el proyecto desarrollado para la evaluación técnica de programador. Es una aplicación web completa que permite gestionar máquinas industriales y calcular sus ciclos de producción e inactividad, siguiendo un conjunto de reglas de negocio específicas.
+Howdy! 🤠 Este es el proyecto desarrollado para propuesta empresarial. Es una aplicación web completa que permite gestionar máquinas industriales y calcular sus ciclos de producción e inactividad, siguiendo un conjunto de reglas de negocio específicas.
 
 La aplicación está construida con una arquitectura moderna, separando el backend del frontend:
 
